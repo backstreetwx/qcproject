@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcms.dao.mapper.TaskMapper">
+	
+	<insert id="saveTask" keyProperty="id" keyColumn="qc_id" useGeneratedKeys="true">
+		INSERT INTO qc_task (
+		  qc_type,
+		  qc_icon,
+		  qc_title,
+		  qc_sub_title,
+		  qc_point,
+		  qc_limit_read,
+		  qc_start_time,
+		  qc_finish_time,
+		  qc_sequence,
+		  qc_status,
+		  qc_create_time
+		) 
+		VALUES
+		  (
+		    #{type},
+		    #{icon},
+		    #{title},
+		    #{subTitle},
+		    #{point},
+		    #{limitRead},
+		    #{startTime},
+		    #{finishTime},
+		    #{sequence},
+		    #{status},
+		    #{createTime}
+		  ) ;
+	</insert>
+	
+	<select id="getTaskVos" resultType="TaskVo">
+		SELECT 
+		  qc_id AS id,
+		  qc_type AS type,
+		  qc_icon AS icon,
+		  qc_title AS title,
+		  qc_sub_title AS subTitle,
+		  qc_point AS point,
+		  qc_limit_read AS limitRead,
+		  qc_share_count AS shareCount,
+		  qc_read_count AS readCount,
+		  qc_read_point AS readPoint,
+		  qc_start_time AS startTime,
+		  qc_finish_time AS finishTime,
+		  qc_sequence AS sequence,
+		  qc_status AS status,
+		  qc_create_time AS createTime 
+		FROM
+		  qc_task
+		<where>
+			<if test="QType != null">
+				AND qc_type = #{QType}
+			</if>
+			<if test="QTitle != null and QTitle != ''">
+				AND qc_title LIKE CONCAT('%',#{QTitle},'%')
+			</if>
+			<if test="QSubTitle != null and QSubTitle != ''">
+				AND qc_sub_title LIKE CONCAT('%',#{QSubTitle},'%')
+			</if>
+			<if test="QStatus != null">
+				AND qc_status = #{QStatus}
+			</if>
+		</where>   
+		ORDER BY qc_sequence DESC
+		LIMIT #{start}, #{offset} ;
+	</select>
+	
+	<select id="getTaskVoCount" resultType="int">
+		SELECT 
+		  COUNT(*)
+		FROM
+		  qc_task
+		<where>
+			<if test="QType != null">
+				AND qc_type = #{QType}
+			</if>
+			<if test="QTitle != null and QTitle != ''">
+				AND qc_title LIKE CONCAT('%',#{QTitle},'%')
+			</if>
+			<if test="QSubTitle != null and QSubTitle != ''">
+				AND qc_sub_title LIKE CONCAT('%',#{QSubTitle},'%')
+			</if>
+			<if test="QStatus != null">
+				AND qc_status = #{QStatus}
+			</if>
+		</where>   
+	</select>
+	
+	<update id="updateType">
+		UPDATE 
+			qc_task
+		SET 
+			qc_type = #{type}
+		WHERE qc_id = #{id} ;
+	</update>
+	
+	<update id="updateStatus">
+		UPDATE 
+			qc_task
+		SET 
+			qc_status = #{status}
+		WHERE qc_id = #{id} ;
+	</update>
+	
+	<select id="getTaskVoByTaskId" resultType="TaskVo">
+		SELECT 
+		  qc_id AS id,
+		  qc_type AS type,
+		  qc_icon AS icon,
+		  qc_title AS title,
+		  qc_sub_title AS subTitle,
+		  qc_point AS point,
+		  qc_limit_read AS limitRead,
+		  qc_share_count AS shareCount,
+		  qc_read_count AS readCount,
+		  qc_read_point AS readPoint,
+		  qc_start_time AS startTime,
+		  qc_finish_time AS finishTime,
+		  qc_status AS status,
+		  qc_create_time AS createTime 
+		FROM
+		  qc_task
+		WHERE qc_id = #{id}
+		LIMIT 1;
+	</select>
+	
+	<update id="updateLimitRead">
+		UPDATE 
+			qc_task
+		SET 
+			qc_limit_read = #{limitRead}
+		WHERE qc_id = #{id} ;
+	</update>
+	
+	<update id="updatePoint">
+		UPDATE 
+			qc_task
+		SET 
+			qc_point = #{point}
+		WHERE qc_id = #{id} ;
+	</update>
+	
+	<update id="updateSubTitle">
+		UPDATE 
+			qc_task
+		SET 
+			qc_sub_title = #{subTitle}
+		WHERE qc_id = #{id} ;
+	</update>
+	
+	<update id="updateTitle">
+		UPDATE 
+			qc_task
+		SET 
+			qc_title = #{title}
+		WHERE qc_id = #{id} ;
+	</update>
+	
+	<select id="getStartTasks" resultType="int">
+		SELECT 
+		  qc_id 
+		FROM
+		  qc_task 
+		WHERE TIMESTAMPDIFF(MINUTE, NOW(), qc_start_time) &lt; 10 
+		  AND qc_status = 1 ;
+	</select>
+	
+	<select id="getMaxSequence" resultType="int">
+		SELECT 
+		  MAX(qc_sequence) 
+		FROM
+		  qc_task ;
+	</select>
+	
+	<update id="updateSequence">
+		UPDATE 
+			qc_task
+		SET 
+			qc_sequence = #{sequence}
+		WHERE qc_id = #{id} ;
+	</update>
+	
+	<select id="getTaskVos2" resultType="TaskVo">
+		SELECT 
+		  qc_id AS id,
+		  qc_type AS type,
+		  qc_icon AS icon,
+		  qc_title AS title,
+		  qc_sub_title AS subTitle,
+		  qc_point AS point,
+		  qc_limit_read AS limitRead,
+		  qc_share_count AS shareCount,
+		  qc_read_count AS readCount,
+		  qc_read_point AS readPoint,
+		  qc_start_time AS startTime,
+		  qc_finish_time AS finishTime,
+		  qc_sequence AS sequence,
+		  qc_status AS status,
+		  qc_create_time AS createTime 
+		FROM
+		  qc_task
+		WHERE qc_status != 1 AND qc_status != 0
+		ORDER BY qc_status, qc_type DESC, qc_sequence DESC
+		LIMIT #{start}, #{offset} ;
+	</select>
+	
+	<select id="getTaskVoCount2" resultType="int">
+		SELECT 
+		  COUNT(*)
+		FROM
+		  qc_task
+		WHERE qc_status != 1 AND qc_status != 0
+		ORDER BY qc_status, qc_type DESC, qc_sequence DESC
+	</select>
+</mapper>

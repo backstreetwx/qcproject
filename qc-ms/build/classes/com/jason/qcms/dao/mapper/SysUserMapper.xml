@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcms.dao.mapper.SysUserMapper">
+	
+	<!-- 通过用户名获取用户 -->
+	<select id="getSysUserByUsername" resultType="SysUser">
+		SELECT 
+		  DG_ID AS id,
+		  DG_USERNAME AS username,
+		  DG_PASSWORD AS password,
+		  DG_SALT AS salt,
+		  DG_EMAIL AS email,
+		  DG_REALNAME AS realname,
+		  DG_PHONE AS phone,
+		  DG_SEX AS sex,
+		  DG_BIRTHDAY AS birthday,
+		  DG_LOCKED AS locked,
+		  DG_CREATE_TIME AS createTime 
+		FROM
+		  dg_sys_user 
+		WHERE DG_USERNAME = #{username}
+		LIMIT 1 ;
+	</select>
+</mapper>

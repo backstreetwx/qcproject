@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.TaskContentMapper">
+	<!-- 获取一个任务内容条目 -->
+	<select id="getWatchTaskContent" resultType="WatchTaskContent">
+		SELECT 
+		 qc_type AS type,
+		 qc_url AS url
+		FROM
+		  qc_task_content
+		WHERE qc_task_id = #{taskId}
+		LIMIT 1;
+	</select>
+	
+	<!-- 获取一个任务阅读内容 -->
+	<select id="getReadTaskContent" resultType="ReadTaskContent">
+		SELECT 
+		 t.qc_id AS id,
+		 t.qc_title AS title,
+		 t.qc_read_count AS readCount,
+		 tc.qc_type AS type,
+		 tc.qc_url AS url,
+		 tc.qc_content AS content,
+		 tc.qc_create_time AS createTime 
+		FROM
+		  qc_task_content tc,
+		  qc_task t
+		WHERE tc.qc_task_id = t.qc_id 
+			AND qc_task_id = #{taskId}
+		LIMIT 1;
+	</select>
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.TaskTmpMapper">
+	
+	<!-- 更新用户临时记录作为阅读 -->
+	<select id="isExistTaskTmp" resultType="int">
+		SELECT 
+		  COUNT(1) 
+		FROM
+		  qc_task_tmp 
+		WHERE qc_hash_finger = #{hashFinger} 
+		LIMIT 1 ;
+	</select>
+	
+	<!--  -->
+	<insert id="saveTaskTmp">
+		INSERT INTO qc_task_tmp (
+		  qc_hash_finger,
+		  qc_user_id,
+		  qc_task_id,
+		  qc_finger,
+		  qc_ip,
+		  qc_create_time
+		) 
+		VALUES
+		  (
+		    #{hashFinger},
+		    #{userId},
+		    #{taskId},
+		    #{finger},
+		    #{ip},
+		    #{createTime}
+		  ) ;
+	</insert>
+	
+	<!-- 更新用户临时记录作为红包 -->
+	<delete id="deleteTaskTmps">
+		DELETE 
+		FROM
+		  qc_task_tmp 
+		WHERE qc_task_id IN
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

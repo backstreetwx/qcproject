@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcms.dao.mapper.TaskContentMapper">
+	
+	<insert id="saveTaskContent">
+		INSERT INTO qcdb.qc_task_content (
+		  qc_task_id,
+		  qc_type,
+		  qc_url,
+		  qc_content,
+		  qc_create_time
+		) 
+		VALUES
+		  (
+		    #{taskId},
+		    #{type},
+		    #{url},
+		    #{content},
+		    #{createTime}
+		  ) ;
+	</insert>
+	
+	<select id="getTaskContentByTaskId" resultType="TaskContent">
+		SELECT 
+		  qc_type AS type,
+		  qc_url AS url,
+		  qc_content AS content
+		FROM
+		  qc_task_content 
+		WHERE qc_task_id = #{taskId}
+		LIMIT 1;
+	</select>
+</mapper>

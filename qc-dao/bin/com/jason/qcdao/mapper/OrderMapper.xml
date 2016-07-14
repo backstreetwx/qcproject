@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.OrderMapper">
+
+	<!-- 获取订单列表 -->
+	<select id="getOrderList" resultType="OrderItem">
+		SELECT 
+		  qc_type AS type,
+		  qc_icon AS icon,
+		  qc_title AS title,
+		  qc_point AS point,
+		  qc_description AS description
+		FROM
+		  qc_order 
+		WHERE qc_status = 1;
+	</select>
+</mapper>

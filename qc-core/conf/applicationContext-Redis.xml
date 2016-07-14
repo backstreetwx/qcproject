@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
+	
+	<!-- #########################配置抽象连接工厂######################### -->
+	<!-- 连接池配置 -->
+	<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<!-- 链接池中最大连接数 -->
+		<property name="maxTotal" value="500"/>
+		<!-- 链接池中最大空闲的连接数 -->
+		<property name="maxIdle" value="10"/>
+		<!-- 连接池中最少空闲的连接数 -->
+		<property name="minIdle" value="5"/>
+	</bean>
+	<!-- 抽象连接工厂 -->
+	<bean id="abstractConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		abstract="true">
+		<property name="hostName" value="localhost"/>
+		<property name="port" value="6379" />
+		<property name="password" value="19911020" />
+		<property name="poolConfig" ref="poolConfig"/>
+	</bean>
+	
+	<!-- #########################配置缓存数据库######################### -->
+	<!-- 其他缓存 -->
+    <bean id="otherCache" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory">
+			<bean parent="abstractConnectionFactory">
+				<property name="database" value="0"/>
+			</bean>
+		</property>
+		<property name="keySerializer">
+			 <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/> 
+		</property>
+	</bean>
+	<!-- 用户缓存 -->
+    <bean id="userCache" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory">
+			<bean parent="abstractConnectionFactory">
+				<property name="database" value="1"/>
+			</bean>
+		</property>
+		<property name="keySerializer">
+			 <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/> 
+		</property>
+	</bean>
+	<!-- 验证码缓存 -->
+    <bean id="codeCache" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory">
+			<bean parent="abstractConnectionFactory">
+				<property name="database" value="2"/>
+			</bean>
+		</property>
+		<property name="keySerializer">
+			 <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/> 
+		</property>
+	</bean>
+	
+	<!-- ip缓存 -->
+    <bean id="ipCache" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory">
+			<bean parent="abstractConnectionFactory">
+				<property name="database" value="3"/>
+			</bean>
+		</property>
+		<property name="keySerializer">
+			 <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/> 
+		</property>
+	</bean>
+	
+	<!-- 指纹缓存 -->
+    <bean id="fingerCache" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory">
+			<bean parent="abstractConnectionFactory">
+				<property name="database" value="4"/>
+			</bean>
+		</property>
+		<property name="keySerializer">
+			 <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/> 
+		</property>
+	</bean>
+</beans>
+
+
+
+
+

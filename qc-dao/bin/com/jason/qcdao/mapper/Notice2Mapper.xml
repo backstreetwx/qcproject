@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.Notice2Mapper">
+	
+	<!-- 获取通知 -->
+	<select id="getNotice2" resultType="Notice2">
+		SELECT 
+		  qc_id AS id,
+		  qc_type AS type,
+		  qc_title AS title,
+		  qc_pic AS pic,
+		  qc_url AS url,
+		  qc_description AS description,
+		  qc_create_time AS createTime 
+		FROM
+		  qc_notice_2 
+		WHERE qc_status = 1 
+		ORDER BY qc_id DESC 
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 获取通知列表 -->
+	<select id="getNotice2s" resultType="Notice2Item">
+		SELECT 
+		  qc_type AS type,
+		  qc_title AS title,
+		  qc_pic AS pic,
+		  qc_url AS url,
+		  qc_description AS description,
+		  qc_create_time AS createTime 
+		FROM
+		  qc_notice_2
+		ORDER BY qc_id DESC 
+		LIMIT #{start}, #{len} ;
+	</select>
+</mapper>

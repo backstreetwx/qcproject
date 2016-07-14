@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+	
+	<!-- #########################自动装载任务bean######################### -->
+	<!-- 扫描监听器bean -->	
+	<context:component-scan base-package="com.jason.qcserver.jms" />
+	
+	<!-- #########################配置连接工厂######################### -->
+	<bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+		<property name="targetConnectionFactory">
+			<bean class="org.apache.activemq.pool.PooledConnectionFactory">  
+		    	<property name="connectionFactory">
+		    		<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+						<property name="brokerURL" value="tcp://localhost:61616" />
+						<property name="userName" value="jason"/>
+						<property name="password" value="19911020"/>
+						<property name="useAsyncSend" value="true" />
+					</bean>
+		    	</property>
+	    		<property name="maxConnections" value="1000"/><!-- 池中存放最大连接数 -->
+			</bean>  
+		</property>
+	</bean>
+    <!-- #########################配置消息监听器######################### -->
+    <!-- 用户监听容器 -->
+    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
+        <property name="connectionFactory" ref="connectionFactory"/>  
+        <property name="destination">
+        	 <bean class="org.apache.activemq.command.ActiveMQQueue">  
+        		<constructor-arg value="userQueue"/> <!-- 这里传入的是队列的名称 -->  
+    		</bean>  
+        </property>
+        <property name="messageListener">
+        	<bean class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
+		        <property name="delegate" ref="userMessageListener"/>  <!-- 这里传人监听器的bean -->
+		        <property name="defaultListenerMethod" value="handleMessage"/>
+    		</bean> 
+        </property>
+    </bean>  
+    <!-- 订单监听容器 -->
+    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
+        <property name="connectionFactory" ref="connectionFactory"/>  
+        <property name="destination">
+        	 <bean class="org.apache.activemq.command.ActiveMQQueue">  
+        		<constructor-arg value="orderQueue"/> <!-- 这里传入的是队列的名称 -->  
+    		</bean>  
+        </property>
+        <property name="messageListener">
+        	<bean class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
+		        <property name="delegate" ref="orderMessageListener"/>  <!-- 这里传人监听器的bean -->
+		        <property name="defaultListenerMethod" value="handleMessage"/>
+    		</bean> 
+        </property>
+    </bean>  
+    <!-- 红包监听容器 -->
+    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
+        <property name="connectionFactory" ref="connectionFactory"/>  
+        <property name="destination">
+        	 <bean class="org.apache.activemq.command.ActiveMQQueue">  
+        		<constructor-arg value="packet2Queue"/> <!-- 这里传入的是队列的名称 -->  
+    		</bean>  
+        </property>
+        <property name="messageListener">
+        	<bean class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
+		        <property name="delegate" ref="packet2MessageListener"/>  <!-- 这里传人监听器的bean -->
+		        <property name="defaultListenerMethod" value="handleMessage"/>
+    		</bean> 
+        </property>
+    </bean>  
+    <!-- 兑换监听容器 -->
+    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">  
+        <property name="connectionFactory" ref="connectionFactory"/>  
+        <property name="destination">
+        	 <bean class="org.apache.activemq.command.ActiveMQQueue">  
+        		<constructor-arg value="order2Queue"/> <!-- 这里传入的是队列的名称 -->  
+    		</bean>  
+        </property>
+        <property name="messageListener">
+        	<bean class="org.springframework.jms.listener.adapter.MessageListenerAdapter">  
+		        <property name="delegate" ref="order2MessageListener"/>  <!-- 这里传人监听器的bean -->
+		        <property name="defaultListenerMethod" value="handleMessage"/>
+    		</bean> 
+        </property>
+    </bean>  
+</beans>

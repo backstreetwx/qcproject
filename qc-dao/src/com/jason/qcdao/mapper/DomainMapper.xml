@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.DomainMapper">
+	<!-- 获取一个随机域名 -->
+	<select id="getRandDomain" resultType="string">
+		SELECT 
+		  qc_domain AS domain
+		FROM
+		  qc_domain 
+		WHERE qc_status = 1
+		ORDER BY RAND() 
+		LIMIT 1 ;
+	</select>
+</mapper>

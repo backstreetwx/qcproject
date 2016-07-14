@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.UserAccountMapper">
+	<!-- 保存用户账号 -->
+	<insert id="saveUserAccount">
+		INSERT INTO qc_user_account (
+			qc_hash_id,
+			qc_create_time
+		)
+		VALUES
+		(
+			#{hashId},
+			#{createTime}
+		) ;
+	</insert>
+	
+	<!-- 更新用户的邀请次数 -->
+	<update id="updatePointForInvite">
+		UPDATE 
+		  qc_user_account 
+		SET
+		  qc_may_point = qc_may_point + #{point},
+		  qc_total_point = qc_total_point + #{point},
+		  qc_invite_count = qc_invite_count + 1,
+		  qc_invite_point = qc_invite_point + #{point}
+		WHERE qc_hash_id = #{hashId } ;
+	</update>
+	
+	<!-- 更新用户账号红包信息 -->
+	<update id="updatePointForPacket">
+		UPDATE 
+		  qc_user_account 
+		SET
+		  qc_may_point = qc_may_point + #{point},
+		  qc_total_point = qc_total_point + #{point},
+		  qc_packet_count = qc_packet_count + 1,
+		  qc_packet_point = qc_packet_point + #{point}
+		WHERE qc_hash_id = #{hashId } ;
+	</update>
+	
+	<!-- 获取用户的可用积分 -->
+	<select id="getMayPoint" resultType="int">
+		SELECT 
+		  qc_may_point
+		FROM
+		  qc_user_account 
+		WHERE qc_hash_id = #{hashId }
+		LIMIT 1
+	</select>
+	
+	<!-- 更新用户的积分作为订单 -->
+	<update id="updatePointForUserOrder">
+		UPDATE 
+		  qc_user_account 
+		SET
+		  qc_may_point = qc_may_point - #{point},
+		  qc_order_count = qc_order_count + 1,
+		  qc_order_point = qc_order_point + #{point}
+		WHERE qc_hash_id = #{hashId } ;
+	</update>
+	
+	<!--  -->
+	<update id="updatePointForUserOrder2">
+	    UPDATE 
+		  qc_user_account 
+		SET
+		  qc_may_point = qc_may_point + #{point}
+		WHERE qc_hash_id = #{hashId } ;
+	</update>
+	
+	<!-- 获取排行榜 -->
+	<select id="getRankings" resultType="RankingItem">
+		SELECT 
+		  ua.qc_total_point AS totalPoint,
+		  u.qc_account AS account,
+		  u.qc_headimg AS headimg,
+		  qc_nickname AS nickname 
+		FROM
+		  qc_user_account ua,
+		  qc_user u
+		WHERE ua.qc_hash_id = u.qc_hash_id
+		ORDER BY ua.qc_total_point DESC
+		LIMIT #{start},#{len} ;
+	</select>
+	
+	<!-- 获取分享邀请数据 -->
+	<select id="getShareInvite" resultType="ShareInvite">
+		SELECT 
+		  qc_invite_count AS inviteCount,
+		  qc_invite_point AS invitePoint
+		FROM
+		  qc_user_account
+		WHERE qc_hash_id = #{hashId}
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 更新用户账号作为任务 -->
+	<update id="updatePointForTask">
+		UPDATE 
+		  qc_user_account 
+		SET
+		  qc_task_count = qc_task_count + 1,
+		  qc_task_point = qc_task_point + #{point}
+		WHERE qc_hash_id = #{hashId } ;
+	</update>
+	
+	<!-- 更新用户账号作为任务 -->
+	<update id="updatePointForTask2">
+		UPDATE 
+		  qc_user_account ua 
+		  INNER JOIN qc_user_tmp ut 
+		    ON ua.qc_hash_id = ut.qc_hash_id SET ua.qc_may_point = ua.qc_may_point + ut.qc_task_point,
+		  ua.qc_total_point = ua.qc_total_point + ut.qc_task_point; 
+	</update>
+	
+	<!-- 更新用户账号作为任务 -->
+	<update id="updatePointForTask3">
+		UPDATE 
+		  qc_user_account 
+		SET
+		  qc_may_point = qc_may_point + #{point},
+		  qc_total_point = qc_total_point + #{point}
+		WHERE qc_hash_id = #{hashId } ;
+	</update>
+	
+	<!-- 更新用户账号作为任务 -->
+	<update id="updatePointForTask4">
+		UPDATE 
+		  qc_user_account 
+		SET
+		  qc_may_point = qc_may_point + #{point},
+		  qc_total_point = qc_total_point + #{point},
+		  qc_task_count = qc_task_count + 1,
+		  qc_task_point = qc_task_point + #{point}
+		WHERE qc_hash_id = #{hashId } ;
+	</update>
+	
+	<!-- 获取红包的次数 -->
+	<select id="getPacketCount" resultType="int">
+		SELECT 
+		  qc_packet_count
+		FROM
+		  qc_user_account
+		WHERE qc_hash_id = #{hashId}
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 更新用户的分享次数 -->
+	<update id="updateShareCount">
+		UPDATE 
+		  qc_user_account 
+		SET
+		  qc_share_count = qc_share_count + 1
+		WHERE qc_hash_id = #{hashId } ;
+	</update>
+	
+	<!-- 获取用户的分享次数 -->
+	<select id="getShareCount" resultType="int">
+		SELECT 
+		  qc_share_count
+		FROM
+		  qc_user_account
+		WHERE qc_hash_id = #{hashId}
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 更新用户积分作为分享 -->
+	<update id="updatePointForShare">
+		UPDATE 
+		  qc_user_account 
+		SET
+		  qc_may_point = qc_may_point + #{point},
+		  qc_total_point = qc_total_point + #{point},
+		  qc_share_count = qc_share_count + 1
+		WHERE qc_hash_id = #{hashId } ;
+	</update>
+	
+	<!-- 获取邀请人数量 -->
+	<select id="getInviteCount" resultType="int">
+		SELECT 
+		  qc_invite_count
+		FROM
+		  qc_user_account
+		WHERE qc_hash_id = #{hashId}
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 更新用户积分作为抢红包 -->
+	<update id="updatePointForUserPacket2">
+		UPDATE 
+		  qc_user_account 
+		SET
+		  qc_may_point = qc_may_point + #{point},
+		  qc_total_point = qc_total_point + #{point},
+		  qc_packet_2_point = qc_packet_2_point + #{point},
+		  qc_packet_2_count = qc_packet_2_count + 1
+		WHERE qc_hash_id = #{hashId } ;
+	</update>
+	
+	<!-- 获取用户抢红包的次数 -->
+	<select id="getPacket2Count" resultType="int">
+		SELECT 
+		  qc_packet_2_count
+		FROM
+		  qc_user_account
+		WHERE qc_hash_id = #{hashId}
+		LIMIT 1 ;
+	</select>
+</mapper>

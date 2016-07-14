@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.UserTmpMapper">
+	<!-- 保存一条用户临时记录 -->
+	<insert id="saveUserTmp">
+		INSERT INTO qc_user_tmp (
+		  qc_hash_id,
+		  qc_create_time
+		) 
+		VALUES
+		  (
+		    #{hashId},
+		    #{createTime}
+		  ) ;
+	</insert>
+	<!-- 获取我的收益 -->
+	<select id="getMyEarn" resultType="MyEarn">
+		SELECT 
+		  ua.qc_total_point AS totalPoint,
+		  ua.qc_may_point AS mayPoint,
+		  ut.qc_one_point AS totdayPoint,
+		  ut.qc_two_point AS yesterdayPoint,
+		  ut.qc_task_point AS taskPoint,
+		  ut.qc_task_count AS taskCount,
+		  ut.qc_task_read AS taskRead 
+		FROM
+		  qc_user_tmp ut,
+		  qc_user_account ua 
+		WHERE ut.qc_hash_id = ua.qc_hash_id 
+		  AND ut.qc_hash_id = #{hashId} 
+		LIMIT 1;
+	</select>
+	
+	<!-- 获取一个人的临时数据 -->
+	<select id="getUserTmp" resultType="UserTmp">
+		SELECT 
+		  qc_one_point AS onePoint,
+		  qc_two_point AS twoPoint,
+		  qc_three_point AS threePoint,
+		  qc_four_point AS fourPoint,
+		  qc_five_point AS fivePoint,
+		  qc_six_point AS sixPoint,
+		  qc_sever_point AS severPoint
+		FROM
+		  qc_user_tmp 
+		WHERE
+		  qc_hash_id = #{hashId} 
+		LIMIT 1;
+	</select>
+	
+	<!-- 更新用户次数 -->
+	<update id="updateUserTmpForShare">
+		UPDATE 
+			qc_user_tmp
+		SET 
+			qc_task_count = qc_task_count + 1
+		WHERE
+		  qc_hash_id = #{hashId} ;
+	</update>
+	
+	<!-- 更新用户次数 -->
+	<update id="updateUserTmpForShare2">
+		UPDATE 
+			qc_user_tmp
+		SET 
+			qc_one_point = qc_one_point + #{point},
+			qc_task_count = qc_task_count + 1
+		WHERE
+		  qc_hash_id = #{hashId} ;
+	</update>
+	
+	<!-- 更新用户临时记录作为阅读 -->
+	<update id="updateUserTmpForRead">
+		UPDATE 
+			qc_user_tmp
+		SET 
+			qc_one_point = qc_one_point + #{point},
+			qc_task_point = qc_task_point + #{point},
+			qc_task_read = qc_task_read + 1
+		WHERE
+		  qc_hash_id = #{hashId} ;
+	</update>
+	
+	<!-- 用户临时记录定时更新 -->
+	<update id="updateUserTmpForDaily">
+		UPDATE 
+			qc_user_tmp
+		SET 
+			qc_sever_point = qc_six_point,
+			qc_six_point = qc_five_point,
+			qc_five_point = qc_four_point,
+			qc_four_point = qc_three_point,
+			qc_three_point = qc_two_point,
+			qc_two_point = qc_one_point,
+			qc_one_point = 0,
+			qc_task_point = 0,
+			qc_task_count = 0,
+			qc_task_read = 0
+	</update>
+	
+	<!-- 更新用户临时记录作为红包 -->
+	<update id="updateUserTmpForPacket">
+		UPDATE 
+			qc_user_tmp
+		SET 
+			qc_one_point = qc_one_point + #{point}
+		WHERE 
+		  qc_hash_id = #{hashId} ;
+	</update>
+	
+	<!-- 获取临时记录作为明细 -->
+	<select id="getUserTmpForDetail" resultType="UserTmp">
+		SELECT 
+		  qc_hash_id AS hashId,
+		  qc_task_point AS taskPoint 
+		FROM
+		  qc_user_tmp 
+		WHERE qc_task_point > 0
+		LIMIT #{start}, #{len} ;
+	</select>
+	
+	<!-- 随机获取若干条用户hashId -->
+	<select id="getRandHashIds" resultType="string">
+		SELECT 
+		  qc_hash_id 
+		FROM
+		  qc_user_tmp 
+		WHERE qc_one_point = 0 
+		  AND qc_two_point = 0 
+		  AND qc_three_point = 0 
+		  AND qc_four_point = 0 
+		  AND qc_five_point = 0 
+		  AND qc_six_point = 0 
+		  AND qc_sever_point = 0 
+		  ORDER BY RAND() LIMIT #{size} ;
+	</select>
+	
+	<!-- 获取一条用户hashId -->
+	<select id="getRandHashId" resultType="string">
+		SELECT 
+		  qc_hash_id 
+		FROM
+		  qc_user_tmp 
+		WHERE qc_one_point = 0 
+		  AND qc_two_point = 0 
+		  AND qc_three_point = 0 
+		  AND qc_four_point = 0 
+		  AND qc_five_point = 0 
+		  AND qc_six_point = 0 
+		  AND qc_sever_point = 0 
+		  AND qc_hash_id NOT IN 
+		  <foreach collection="hashIds" item="hashId" open="(" close=")" separator=",">
+			#{hashId}
+		  </foreach>
+		  ORDER BY RAND() LIMIT 1 ;
+	</select>
+</mapper>

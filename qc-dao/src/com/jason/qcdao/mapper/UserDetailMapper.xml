@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.UserDetailMapper">
+	<!-- 保存用户详情 -->
+	<insert id="saveUserDetail">
+		INSERT INTO qc_user_detail (
+		  qc_hash_id,
+		  qc_type,
+		  qc_icon,
+		  qc_title,
+		  qc_point,
+		  qc_create_time
+		) 
+		VALUES
+		  (
+		    #{hashId},
+		    #{type},
+		    #{icon},
+		    #{title},
+		    #{point},
+		    #{createTime}
+		  ) ;
+	</insert>
+	
+	<!-- 获取详情分页数据 -->
+	<select id="getDetails" resultType="DetailItem">
+		SELECT 
+		  qc_icon AS icon,
+		  qc_title AS title,
+		  qc_point AS point,
+		  qc_create_time AS createTime 
+		FROM
+		  qc_user_detail 
+		WHERE qc_hash_id = #{hashId}  
+		ORDER BY qc_id DESC
+		LIMIT #{start}, #{len} ;
+	</select>
+</mapper>

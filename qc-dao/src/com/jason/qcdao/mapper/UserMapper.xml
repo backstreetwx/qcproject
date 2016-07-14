@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.UserMapper">
+	<!-- 判断用户是否存在 -->
+	<select id="isExistUserById" resultType="int">
+		SELECT 
+		  COUNT(1) 
+		FROM
+		  qc_user 
+		WHERE qc_id = #{id} 
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 判断用户是否存在 -->
+	<select id="isExistUserByAccount" resultType="int">
+		SELECT 
+		  COUNT(1) 
+		FROM
+		  qc_user 
+		WHERE qc_account = #{account} 
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 判断用户是否存在 -->
+	<select id="isExistUserByOpenId" resultType="int">
+		SELECT 
+		  COUNT(1) 
+		FROM
+		  qc_user 
+		WHERE qc_open_id = #{openId} 
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 判断用户是否存在 -->
+	<select id="isExistUserByHashId" resultType="int">
+		SELECT 
+		  COUNT(1) 
+		FROM
+		  qc_user 
+		WHERE qc_hash_id = #{hashId} 
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 通过openId获取用户 -->
+	<select id="getUserByOpenId" resultType="user">
+		SELECT 
+		  qc_hash_id AS hashId,
+		  qc_account AS account,
+		  qc_status  AS status
+		FROM
+		  qc_user 
+		WHERE qc_open_id = #{openId}
+		LIMIT 1 ;
+	</select>
+	<!-- 通过account获取用户 -->
+	<select id="getUserByAccount" resultType="user">
+		SELECT 
+		  qc_hash_id AS hashId,
+		  qc_password AS password,
+		  qc_salt AS salt,
+		  qc_status  AS status
+		FROM
+		  qc_user 
+		WHERE qc_account = #{account}
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 通过hashId获取用户  -->
+	<select id="getUserByHashId" resultType="user">
+		SELECT 
+		  qc_id AS id,
+		  qc_hash_id AS hashId,
+		  qc_account AS account,
+		  qc_password AS password,
+		  qc_salt AS salt,
+		  qc_invite_id AS inviteId,
+		  qc_type AS type,
+		  qc_open_id AS openId,
+		  qc_headimg AS headimg,
+		  qc_nickname AS nickname,
+		  qc_sex AS sex,
+		  qc_rate AS rate,
+		  qc_status AS status,
+		  qc_create_time  AS createTime
+		FROM
+		  qc_user 
+		WHERE qc_hash_id = #{hashId}
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 保存用户 -->
+	<insert id="saveUser">
+		INSERT INTO qc_user (
+		  qc_hash_id,
+		  qc_account,
+		  qc_password,
+		  qc_salt,
+		  qc_invite_id,
+		  qc_type,
+		  qc_open_id,
+		  qc_headimg,
+		  qc_nickname,
+		  qc_sex,
+		  qc_rate,
+		  qc_create_time
+		) 
+		VALUES
+		  (
+		    #{hashId},
+		    #{account},
+		    #{password},
+		    #{salt},
+		    #{inviteId},
+		    #{type},
+		    #{openId},
+		    #{headimg},
+		    #{nickname},
+		    #{sex},
+		    #{rate},
+		    #{createTime}
+		  ) ;
+	</insert>
+	
+	<!-- 更新用户 -->
+	<update id="updateUser">
+		UPDATE 
+		  qc_user 
+		SET
+		  qc_headimg = #{headimg},
+		  qc_nickname = #{nickname},
+		  qc_sex = #{sex}
+		WHERE qc_hash_id = #{hashId} ;
+	</update>
+	
+	<!-- 通过ID查询用户的hashId -->
+	<select id="getHashId" resultType="string">
+		SELECT 
+		  qc_hash_id AS hashId
+		FROM
+		  qc_user 
+		WHERE qc_id = #{id}
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 更新用户信息 -->
+	<update id="updateInfo">
+		UPDATE 
+		  qc_user
+		<set>
+			<if test="headimg != null and headimg != ''">
+				 qc_headimg = #{headimg},
+			</if>
+			<if test="nickname != null and nickname != ''">
+				  qc_nickname = #{nickname},
+			</if>
+			<if test="inviteId != null">
+				  qc_invite_id = #{inviteId},
+			</if>
+			<if test="sex != null">
+				  qc_sex = #{sex}
+			</if>
+		</set>
+		WHERE qc_hash_id = #{hashId} ;
+	</update>
+	
+	<!-- 更新密码 -->
+	<select id="updatePassword">
+		UPDATE 
+		  qc_user
+		SET
+			qc_password = #{password},
+			qc_salt = #{salt}
+		WHERE qc_account = #{account} ;
+	</select>
+	
+	<!-- 更新用户的状态 -->
+	<update id="updateStatus">
+		UPDATE 
+		  qc_user
+		SET
+		  qc_status = #{status}
+		WHERE qc_hash_id = #{hashId} ;
+	</update>
+	
+	<!-- 获取用户信息 -->
+	<select id="getByHashIds" resultType="PacketItem">
+		SELECT 
+		  qc_id AS id,
+		  qc_account AS account,
+		  qc_nickname AS nickname,
+		  qc_headimg AS headimg 
+		FROM
+		  qc_user 
+		WHERE qc_hash_id IN
+		<foreach collection="hashIds" item="hashId" open="(" close=")" separator=",">
+			#{hashId}
+		</foreach>
+	</select>
+	
+	<select id="getByHashId" resultType="PacketItem">
+		SELECT 
+		  qc_id AS id,
+		  qc_account AS account,
+		  qc_nickname AS nickname,
+		  qc_headimg AS headimg 
+		FROM
+		  qc_user 
+		WHERE qc_hash_id = #{hashId} 
+		LIMIT 1;
+	</select>
+	
+	<!-- 更新用户比率 -->
+	<update id="updateRate">
+		UPDATE 
+		  qc_user
+		SET
+		  qc_rate = #{rate}
+		WHERE qc_hash_id = #{hashId} ;
+	</update>
+</mapper>

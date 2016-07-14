@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.UserPacket2Mapper">
+
+	<!-- 是否存在用户抢红包记录 -->
+	<select id="isExistUserPacket2ByOrderId" resultType="int">
+	    SELECT 
+		  COUNT(1) 
+		FROM
+		  qc_user_packet_2 
+		WHERE qc_order_id = #{orderId} 
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 保存用户红包记录 -->
+	<insert id="saveUserPacket2">
+		INSERT INTO qc_user_packet_2 (
+		  qc_order_id,
+		  qc_hash_id,
+		  qc_point,
+		  qc_create_time
+		) 
+		VALUES
+		  (
+		    #{orderId},
+		    #{hashId},
+		    #{point},
+		    #{createTime}
+		  ) ;
+	</insert>
+</mapper>

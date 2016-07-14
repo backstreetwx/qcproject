@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.TaskMapper">
+	<!-- 获取任务列表 -->
+	<select id="getTasks" resultType="TaskItem">
+		SELECT 
+		  qc_id AS id,
+		  qc_icon AS icon,
+		  qc_title AS title,
+		  qc_sub_title AS subTitle,
+		  qc_point AS POINT,
+		  qc_limit_Read AS limitRead,
+		  qc_read_count AS readCount,
+		  qc_finish_time AS finishTime,
+		  qc_status AS status,
+		  qc_create_time AS createTime,
+		  (SELECT 
+		    qc_id 
+		  FROM
+		    qc_user_task ut 
+		  WHERE ut.qc_task_id = t.qc_id 
+		    AND ut.qc_hash_id = #{hashId} LIMIT 1) AS tmpId
+		FROM
+		  qc_task t 
+		WHERE t.qc_status != 1 AND t.qc_status != 0
+		ORDER BY t.qc_status, t.qc_type DESC, t.qc_sequence DESC
+		LIMIT #{start}, #{len} ;
+	</select>
+	
+	<!-- 获取任务列表2 -->
+	<select id="getTasks2" resultType="TaskItem">
+		SELECT 
+		  qc_id AS id,
+		  qc_icon AS icon,
+		  qc_title AS title,
+		  qc_sub_title AS subTitle,
+		  qc_point AS POINT,
+		  qc_limit_Read AS limitRead,
+		  qc_read_count AS readCount,
+		  qc_finish_time AS finishTime,
+		  qc_status AS status,
+		  qc_create_time AS createTime,
+		  (SELECT 
+		    qc_id 
+		  FROM
+		    qc_user_task ut 
+		  WHERE ut.qc_task_id = t.qc_id 
+		    AND ut.qc_hash_id = #{hashId} LIMIT 1) AS tmpId
+		FROM
+		  qc_task t 
+		WHERE t.qc_status = 2
+		ORDER BY t.qc_status, t.qc_type DESC, t.qc_sequence DESC
+		LIMIT #{start}, #{len} ;
+	</select>
+	
+	<!-- 获取热门任务 -->
+	<select id="getHotTasks" resultType="HotTaskItem">
+		SELECT 
+		  qc_id AS id,
+		  qc_icon AS icon,
+		  qc_title AS title,
+		  qc_sub_title AS subTitle,
+		  qc_point AS point,
+		  qc_limit_Read AS limitRead,
+		  qc_read_count AS readCount,
+		  qc_share_count AS shareCount,
+		  qc_status AS status,
+		  (SELECT 
+		    qc_id 
+		  FROM
+		    qc_user_task ut 
+		  WHERE ut.qc_task_id = t.qc_id 
+		    AND ut.qc_hash_id = #{hashId} LIMIT 1) AS tmpId
+		FROM
+		  qc_task t
+		WHERE t.qc_status = 2
+		ORDER BY t.qc_type DESC, t.qc_sequence DESC 
+		LIMIT #{start}, #{len} ;
+	</select>
+	
+	<!-- 获取任务分享信息 -->
+	<select id="getTaskShare" resultType="TaskShare">
+		SELECT 
+		  qc_icon AS icon,
+		  qc_title AS title,
+		  qc_sub_title AS subTitle
+		FROM
+		  qc_task
+		WHERE qc_id = #{id}
+		LIMIT 1;
+	</select>
+	
+	<!-- 获取任务回调 -->
+	<select id="getTaskCallback" resultType="TaskCallback">
+		SELECT 
+		  qc_status AS status 
+		FROM
+		  qc_task
+		WHERE qc_id = #{id}
+		LIMIT 1;
+	</select>
+	
+	<!-- 更新任务作为分享 -->
+	<update id="updateTaskForShare">
+		UPDATE 
+			qc_task
+		SET 
+			qc_share_count = qc_share_count + 1
+		WHERE qc_id = #{id} ;
+	</update>
+	
+	<!-- 获取任务阅读相关 -->
+	<select id="getTaskRead" resultType="TaskRead">
+		SELECT 
+		  qc_limit_read AS limitRead,
+		  qc_read_count AS readCount,
+		  qc_point AS point,
+		  qc_status AS status 
+		FROM
+		  qc_task
+		WHERE qc_id = #{id}
+		LIMIT 1;
+	</select>
+	
+	<!-- 更新任务作为阅读 -->
+	<update id="updateTaskForRead">
+		UPDATE 
+			qc_task
+		SET 
+			qc_read_count = qc_read_count + 1,
+			qc_read_point = qc_read_point + #{point},
+			qc_status = #{status}
+		WHERE qc_id = #{id} ;
+	</update>
+	
+	<!-- 更新任务完成 -->
+	<update id="updateTaskForFinish">
+		UPDATE 
+		  qc_task 
+		SET
+		  qc_status = 3 
+		WHERE qc_finish_time = DATE_FORMAT(NOW(), '%Y-%m-%d') ;
+	</update>
+	
+	<select id="getFinishTaskIds" resultType="int">
+		SELECT 
+		  qc_id 
+		FROM
+		  qc_task 
+		WHERE DATEDIFF(NOW(), qc_finish_time) &gt; 0 
+		  AND qc_status = 3 ;
+	</select>
+</mapper>

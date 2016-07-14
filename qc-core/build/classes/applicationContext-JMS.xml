@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	
+	<!-- #########################配置Spring提供的JMS工具类######################### -->
+	<!-- Spring提供的JMS工具类，它可以进行消息发送、接收等 -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory">
+			<bean class="org.springframework.jms.connection.SingleConnectionFactory">
+				<property name="targetConnectionFactory">
+					<bean class="org.apache.activemq.pool.PooledConnectionFactory">  
+				    	<property name="connectionFactory">
+				    		<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+								<property name="brokerURL" value="tcp://localhost:61616" />
+								<property name="userName" value="jason"/>
+								<property name="password" value="19911020"/>
+								<property name="useAsyncSend" value="true" />
+							</bean>
+				    	</property>
+			    		<property name="maxConnections" value="1000"/><!-- 池中存放最大连接数 -->
+					</bean>  
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- #########################配置队列######################### -->
+	<!-- 创建一个用户队列 -->  
+    <bean id="userDestination" class="org.apache.activemq.command.ActiveMQQueue">  
+        <constructor-arg value="userQueue"/> <!-- 这里传入的是队列的名称 -->  
+    </bean>  
+    <!-- 创建一个订单队列 -->  
+    <bean id="orderDestination" class="org.apache.activemq.command.ActiveMQQueue">  
+        <constructor-arg value="orderQueue"/> <!-- 这里传入的是队列的名称 -->  
+    </bean> 
+    <!-- 创建一个红包队列 -->  
+    <bean id="packet2Destination" class="org.apache.activemq.command.ActiveMQQueue">  
+        <constructor-arg value="packet2Queue"/> <!-- 这里传入的是队列的名称 -->  
+    </bean> 
+    <!-- 创建一个红包队列 -->  
+    <bean id="order2Destination" class="org.apache.activemq.command.ActiveMQQueue">  
+        <constructor-arg value="order2Queue"/> <!-- 这里传入的是队列的名称 -->  
+    </bean> 
+</beans>

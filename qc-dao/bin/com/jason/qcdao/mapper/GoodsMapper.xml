@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.GoodsMapper">
+	<!-- 获取商品列表 -->
+	<select id="getGoodses" resultType="GoodsItem">
+		SELECT 
+		  qc_id  AS id,
+		  qc_icon AS icon,
+		  qc_title AS title,
+		  qc_virtual_point AS virtualPoint,
+		  qc_point AS point,
+		  qc_number AS number,
+		  qc_description AS description
+		FROM
+		  qc_goods 
+		WHERE  qc_status = 1
+		LIMIT #{start}, #{len} ;
+	</select>
+	
+	<!-- 获取商品 -->
+	<select id="getGoods" resultType="Goods">
+		SELECT 
+		  qc_icon AS icon,
+		  qc_point AS point,
+		  qc_number AS number,
+		  qc_title AS title,
+		  qc_status AS status
+		FROM
+		  qc_goods 
+		WHERE qc_id = #{id}
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 更新商品作为兑换 -->
+	<update id="updateGoodsForExchange">
+		UPDATE
+			qc_goods
+		SET 
+			qc_total_number = qc_total_number + 1,
+			qc_number = qc_number-1 
+		WHERE qc_id = #{id};	
+	</update>
+</mapper>

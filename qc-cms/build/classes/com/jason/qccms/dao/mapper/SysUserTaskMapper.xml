@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qccms.dao.mapper.SysUserTaskMapper">
+	
+	<!-- 保存系统用户任务 -->
+	<insert id="saveSysUserTask">
+		INSERT INTO qc_sys_user_task (
+		  qc_sys_user_id,
+		  qc_task_id,
+		  qc_create_time
+		) 
+		VALUES
+		  (
+		    #{sysUserId},
+		    #{taskId},
+		    #{createTime}
+		  ) ;
+	</insert>
+</mapper>

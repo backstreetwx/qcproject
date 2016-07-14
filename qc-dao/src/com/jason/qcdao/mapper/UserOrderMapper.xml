@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jason.qcdao.mapper.UserOrderMapper">
+	
+	<!-- 获取用户订单列表 -->
+	<select id="getUserOrders" resultType="UserOrderItem">
+		SELECT 
+		  qc_icon AS icon,
+		  qc_title AS title,
+		  qc_params AS params,
+		  qc_point AS point,
+		  qc_status AS status,
+		  qc_create_time AS createTime 
+		FROM
+		  qc_user_order
+		WHERE qc_hash_id = #{hashId}
+		ORDER BY qc_id DESC
+		LIMIT #{start}, #{len} ;
+	</select>
+	
+	<!-- 判断订单是否存在 -->
+	<select id="isExistUserOrderByOrderId" resultType="int">
+		SELECT 
+		  COUNT(1) 
+		FROM
+		  qc_user_order 
+		WHERE qc_order_id = #{orderId} 
+		LIMIT 1 ;
+	</select>
+	
+	<!-- 保存用户订单 -->
+	<insert id="saveUserOrder">
+		INSERT INTO qc_user_order (
+		  qc_hash_id,
+		  qc_order_id,
+		  qc_type,
+		  qc_icon,
+		  qc_title,
+		  qc_params,
+		  qc_point,
+		  qc_create_time
+		) 
+		VALUES
+		  (
+		    #{hashId},
+		    #{orderId},
+		    #{type},
+		    #{icon},
+		    #{title},
+		    #{params},
+		    #{point},
+		    #{createTime}
+		  ) ;
+	</insert>
+	
+	<!-- 更新订单状态 -->
+	<update id="updateStatus">
+		UPDATE 
+		  qc_user_order 
+		SET
+		  qc_status = #{status}
+		WHERE qc_order_id = #{orderId} ;
+	</update>
+	
+	<!-- 获取订单积分 -->
+	<select id="getPoint" resultType="int">
+		SELECT 
+		  qc_point 
+		FROM
+		  qc_user_order 
+		WHERE qc_order_id = #{orderId} ;
+	</select>
+	
+</mapper>
